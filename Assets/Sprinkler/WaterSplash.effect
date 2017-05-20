@@ -1,0 +1,10 @@
+{
+  "__inherits" : "staxel/effect/base.config",
+  "code" : "mods.sprinkler.effect.splash",
+  "particles" : [
+    "mods.sprinkler.particle.watersplash"
+  ],
+  "sounds" : [
+    "staxel.sounds.place.Water"
+  ]
+}

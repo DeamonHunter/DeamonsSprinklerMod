@@ -1,0 +1,26 @@
+{
+  "__inherits": "staxel/tileObject/base.config",
+  "code": "mods.sprinkler.sprinkler.large",
+  "voxels": "mods/Sprinkler/LargeSprinkler.qb",
+  "attachToBelow": true,
+  "randomizePosition": false,
+  "pricing": {
+    "value": 18000.0,
+	  "sellPrice": 12000.0
+  },
+  "categories": [
+    "misc"
+  ],
+  "searchable": true,
+  "tileStateKind" : "mods.sprinkler.tileState.sprinkler",
+  "interactActionTrigger": "staxel.entityAction.BreakAndPickupAction",
+  "sprinkler" : {
+    "distance" : {"x": 3, "y": 3},
+    "offset" : {"x": 0, "y": -1, "z":0}
+    "checkTime" : 5,
+    "isCurved" : true,
+    "randomCheckTime" : 1.5,
+    "sprinklerEffect": "mods.sprinkler.sprinklerparticle.large",
+    "wateredPlotEffect": "mods.sprinkler.effect.splash"
+  }
+}

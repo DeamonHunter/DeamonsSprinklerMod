@@ -1,0 +1,24 @@
+{
+  "__inherits": "staxel/tileObject/base.config",
+  "code": "mods.sprinkler.sprinkler.small",
+  "voxels": "mods/Sprinkler/SmallSprinkler.qb",
+  "attachToBelow": true,
+  "randomizePosition": false,
+  "pricing": {
+    "value": 2000.0,
+	  "sellPrice": 1600.0
+  },
+  "categories": [
+    "misc"
+  ],
+  "searchable": true,
+  "tileStateKind" : "mods.sprinkler.tileState.sprinkler",
+  "interactActionTrigger": "staxel.entityAction.BreakAndPickupAction",
+  "sprinkler" : {
+    "checkTime" : 10,
+    "distance" : {"x": 1, "y": 1},
+    "randomCheckTime" : 3.5,
+    "sprinklerEffect": "mods.sprinkler.sprinklerparticle.small",
+    "wateredPlotEffect": "mods.sprinkler.effect.splash"
+  }
+}

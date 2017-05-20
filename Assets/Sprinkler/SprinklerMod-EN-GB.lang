@@ -1,0 +1,9 @@
+language.code=en-GB
+language=English
+
+mods.sprinkler.sprinkler.large.name=Large Sprinkler
+mods.sprinkler.sprinkler.large.description=A sprinkler that covers 3 tiles away from the center!
+mods.sprinkler.sprinkler.normal.name=Sprinkler
+mods.sprinkler.sprinkler.normal.description=A sprinkler that covers 2 tiles away from the center!
+mods.sprinkler.sprinkler.small.name=Small Sprinkler
+mods.sprinkler.sprinkler.small.description=A sprinkler that covers 1 tiles away from the center!

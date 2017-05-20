@@ -1,0 +1,16 @@
+{
+  "code" : "mods.sprinkler.particle.watersplash",
+  "position" : { "x" : 0.0, "y" : 0.853, "z" : 0.0 },
+  "positionSpread" : { "x" : 0.328, "y" : 0.22, "z" : 0.328 },
+  "gravityFactor" : { "x" : 0.0, "y" : -0.096, "z" : 0.0 },
+  "emitVelocity" : { "x" : 0.0, "y" : 1.88, "z" : 0.0 },
+  "emitVelocitySpread" : { "x" : 0.73, "y" : 0.98, "z" : 0.734 },
+  "color" : "ff023CCB",
+  "colorSpread" : { "x" : 0.02, "y" : 0.02, "z" : 0.1 },
+  "particlesPerSecond" : 1000.0,
+  "liveDuration" : 0.998,
+  "angularVelocity" : 1.0,
+  "scale" : 0.6,
+  "scaleSpread" : 0.35,
+  "emitDuration" : 0.05
+}
