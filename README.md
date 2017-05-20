@@ -4,7 +4,7 @@ A sprinkler mod for the game Staxel. http://playstaxel.com/
 This mod shows off how to add a new tile entity in the game as well as how to interact with some features that the game provides.
 
 ## Installation of mod to staxel
-Download: http://mods.playstaxel.com/mod/view/75
+Download: http://mods.playstaxel.com/mod/view/75 or https://github.com/DeamonHunter/DeamonsSprinklerMod/releases
 
 1. Extract the .zip or .sxlmod file using your favourite extractor (.sxlmod is a renamed .zip file)
 2. Move DeamonsSprinklerMod.dll and DeamonsSprinkerMod.mod to staxels /bin/ folder. (This step may be improved later)
