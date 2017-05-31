@@ -226,5 +226,9 @@ namespace DeamonsSprinklerMod {
         public override bool IsBeingLookedAt() {
             return false;
         }
+
+        public override bool Interactable() {
+            return false;
+        }
     }
 }
