@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Plukit.Base;
 using Staxel;
 using Staxel.Effects;
@@ -18,6 +19,7 @@ namespace DeamonsSprinklerMod {
         private Vector3D _bottomOffset;
         private Timestep _lastCheck;
         private bool _done;
+        private int _lastCheckedDay;
         private List<Vector2I> _positions;
         private int _currentTile;
 
@@ -44,6 +46,14 @@ namespace DeamonsSprinklerMod {
                 return;
             }
 
+            //If the day has changed, plants should be watered. Has a side effect that it will water plants before
+            //the world actually checks if they are watered.
+            if (_lastCheckedDay < universe.DayNightCycle().Day) {
+                WaterAllPlantSilently(universe);
+                _lastCheckedDay = universe.DayNightCycle().Day;
+                _lastCheck = timestep;
+            }
+
             //Reset the location of the tile entity. Mainly used for tile offsets.
             _bottomOffset = Location.ToVector3D();
             Vector3F tileOffset;
@@ -52,23 +62,35 @@ namespace DeamonsSprinklerMod {
 
             //Actual watering logic
             if (_lastCheck + SprinklerComp.CheckTime <= timestep) {
-                _lastCheck = timestep + (int)Math.Floor(SprinklerComp.RandomCheckTime * GameContext.RandomSource.NextDouble(-1, 1));
-                _currentTile++;
-                if (_currentTile >= _positions.Count) {
-                    _currentTile = 0;
-                    GameContext.RandomSource.Shuffle(_positions);
+                //Get the number of tiles needed to be watered.
+                long tiles = (timestep - _lastCheck) / SprinklerComp.CheckTime;
+                //If the number of tiles needed is bigger or at the count of total tiles, then just water all of them.
+                if (tiles >= _positions.Count)
+                    WaterAllPlantSilently(universe);
+                else {
+                    while (tiles > 0) {
+                        _lastCheck = timestep + (int)Math.Floor(SprinklerComp.RandomCheckTime * GameContext.RandomSource.NextDouble(-1, 1));
+                        _currentTile++;
+                        if (_currentTile >= _positions.Count) {
+                            _currentTile = 0;
+                            GameContext.RandomSource.Shuffle(_positions);
+                        }
+                        //Water all but the last tile silently
+                        if (tiles > 1)
+                            WaterPlantSilently(universe, GetLocationRelative(_positions[_currentTile]));
+                        else
+                            WaterPlant(universe, GetLocationRelative(_positions[_currentTile]));
+                        tiles--;
+                    }
                 }
-                var checkLocation = Location + SprinklerComp.Offset + new Vector3I(_positions[_currentTile].X, 0, _positions[_currentTile].Y);
-
-                WaterPlant(universe, checkLocation);
             }
         }
 
         /// <summary>
-        /// Function set up to water the tile, and play an effect.
+        /// Waters the tile, and play an effect.
         /// </summary>
-        /// <param name="facade">Universe this entity is located in</param>
-        /// <param name="tileLocation">The world location to water</param>
+        /// <param name="facade">Universe this entity is located in.</param>
+        /// <param name="tileLocation">The world location to water.</param>
         private void WaterPlant(EntityUniverseFacade facade, Vector3I tileLocation) {
             var tileInteractionState = facade.FetchTileStateEntityLogic(tileLocation);
             if (tileInteractionState == null || tileInteractionState.GetType() != typeof(DirtTileStateEntityLogic))
@@ -76,6 +98,38 @@ namespace DeamonsSprinklerMod {
             GameContext.FarmingDatabase.EntityWaterCanAction(Entity, tileLocation, facade);
             if (!SprinklerComp.WateredPlotEffect.IsNullOrEmpty())
                 tileInteractionState.Entity.Effects.Trigger(new EffectTrigger(SprinklerComp.WateredPlotEffect));
+        }
+
+        /// <summary>
+        /// Waters the tile, and without playing an effect.
+        /// </summary>
+        /// <param name="facade">Universe this entity is located in.</param>
+        /// <param name="tileLocation">The world location to water.</param>
+        private void WaterPlantSilently(EntityUniverseFacade facade, Vector3I tileLocation) {
+            var tileInteractionState = facade.FetchTileStateEntityLogic(tileLocation);
+            if (tileInteractionState == null || tileInteractionState.GetType() != typeof(DirtTileStateEntityLogic))
+                return;
+            GameContext.FarmingDatabase.EntityWaterCanAction(Entity, tileLocation, facade);
+        }
+
+        /// <summary>
+        /// Waters all avaliable tiles without playing effects.
+        /// </summary>
+        /// <param name="facade">Universe this entity is located in.</param>
+        private void WaterAllPlantSilently(EntityUniverseFacade facade) {
+            foreach (var pos in _positions) {
+                Vector3I worldPos = GetLocationRelative(pos);
+                WaterPlantSilently(facade, worldPos);
+            }
+        }
+
+        /// <summary>
+        /// Get the world position of a tile relative to sprinkler.
+        /// </summary>
+        /// <param name="position">A vector2 telling which position is needed.</param>
+        /// <returns>A vector3 containing the world positon of the given tile.</returns>
+        private Vector3I GetLocationRelative(Vector2I position) {
+            return Location + SprinklerComp.Offset + new Vector3I(position.X, 0, position.Y);
         }
 
         public override void PostUpdate(Timestep timestep, EntityUniverseFacade universe) {
@@ -93,6 +147,7 @@ namespace DeamonsSprinklerMod {
             _blob.FetchBlob("bottomOffset").SetVector3D(_bottomOffset);
             _blob.SetString("tile", _configuration.Code);
             _blob.SetBool("done", _done);
+            _blob.SetLong("lastCheck", _lastCheck.Step);
         }
 
         /// <summary>
@@ -106,7 +161,8 @@ namespace DeamonsSprinklerMod {
             _configuration = GameContext.TileDatabase.GetTileConfiguration(_blob.GetString("tile"));
             SprinklerComp = _configuration.Components.GetOrDefault<SprinklerComponentBuilder.SprinklerComponent>();
             WaterParticles = new ParticleSource(GameContext.ParticleDatabase.GetParticle(SprinklerComp.SprinklerEffect).ParticleData);
-            _lastCheck = Timestep.Null;
+            long check = _blob.GetLong("lastCheck", 0);
+            _lastCheck = new Timestep(check);
         }
 
         /// <summary>
@@ -201,7 +257,7 @@ namespace DeamonsSprinklerMod {
         }
 
         /// <summary>
-        /// Restor from saved data
+        /// Restore from saved data
         /// </summary>
         /// <param name="data"></param>
         public override void RestoreFromPersistedData(Blob data, EntityUniverseFacade facade) {
