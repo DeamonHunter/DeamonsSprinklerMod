@@ -48,11 +48,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Plukit.Base">
-      <HintPath>..\..\..\..\..\Games\Plukit\Staxel\StaxelStable\gamedata\bin\Plukit.Base.dll</HintPath>
+    <Reference Include="Plukit.Base, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Staxel\bin\Plukit.Base.dll</HintPath>
     </Reference>
-    <Reference Include="Staxel">
-      <HintPath>..\..\..\..\..\Games\Plukit\Staxel\StaxelStable\gamedata\bin\Staxel.dll</HintPath>
+    <Reference Include="Staxel, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Staxel\bin\Staxel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

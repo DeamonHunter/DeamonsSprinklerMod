@@ -25,6 +25,7 @@ namespace DeamonsSprinklerMod {
             blob.FetchBlob("location").SetVector3I(location);
             blob.SetLong("variant", tile.Variant());
             blob.FetchBlob("position").SetVector3D(location.ToTileCenterVector3D());
+            blob.FetchBlob("velocity").SetVector3D(Vector3D.Zero);
             entity.Construct(blob, facade);
             Blob.Deallocate(ref blob);
             facade.AddEntity(entity);

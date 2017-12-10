@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Plukit.Base;
 using Staxel;
 using Staxel.Effects;
+using Staxel.Items;
 using Staxel.Logic;
 using Staxel.Particles;
 using Staxel.Tiles;
@@ -13,7 +13,6 @@ namespace DeamonsSprinklerMod {
     internal sealed class SprinklerTileStateEntityLogic : TileStateEntityLogic {
         internal SprinklerComponentBuilder.SprinklerComponent SprinklerComp;
         internal ParticleSource WaterParticles;
-        private readonly Blob _blob;
         private TileConfiguration _configuration;
         private uint _variant;
         private Vector3D _bottomOffset;
@@ -23,10 +22,8 @@ namespace DeamonsSprinklerMod {
         private List<Vector2I> _positions;
         private int _currentTile;
 
-        public SprinklerTileStateEntityLogic(Entity entity) {
-            Entity = entity;
-            _blob = entity.Blob.FetchBlob("logic");
-            Entity.Physics.PriorityChunkRadius(0);
+        public SprinklerTileStateEntityLogic(Entity entity) : base(entity) {
+            Entity.Physics.PriorityChunkRadius(0, false);
         }
 
         public override void PreUpdate(Timestep timestep, EntityUniverseFacade entityUniverseFacade) {
@@ -38,11 +35,13 @@ namespace DeamonsSprinklerMod {
         public override void Update(Timestep timestep, EntityUniverseFacade universe) {
             Tile tile;
             //Don't let this logic do anything if tile does not exist. Might be accessed after removal of tile.
-            if (!universe.ReadTile(Location, out tile))
+            if (!universe.ReadTile(Location, TileAccessFlags.None, out tile))
                 return;
             //If the tile/variant has changed, or it doesn't have a Sprinkler Component set this logic to be removed.
             if ((tile.Configuration != _configuration) || (_variant != tile.Variant()) || (SprinklerComp == null)) {
                 _done = true;
+                if (tile.Configuration == _configuration)
+                    universe.RemoveTile(Entity, Location, TileAccessFlags.None);
                 return;
             }
 
@@ -57,7 +56,7 @@ namespace DeamonsSprinklerMod {
             //Reset the location of the tile entity. Mainly used for tile offsets.
             _bottomOffset = Location.ToVector3D();
             Vector3F tileOffset;
-            if (universe.TileOffset(Location, out tileOffset))
+            if (universe.TileOffset(Location, TileAccessFlags.None, out tileOffset))
                 _bottomOffset.Y += tileOffset.Y;
 
             //Actual watering logic
@@ -92,7 +91,7 @@ namespace DeamonsSprinklerMod {
         /// <param name="facade">Universe this entity is located in.</param>
         /// <param name="tileLocation">The world location to water.</param>
         private void WaterPlant(EntityUniverseFacade facade, Vector3I tileLocation) {
-            var tileInteractionState = facade.FetchTileStateEntityLogic(tileLocation);
+            var tileInteractionState = facade.FetchTileStateEntityLogic(tileLocation, TileAccessFlags.None);
             if (tileInteractionState == null || tileInteractionState.GetType() != typeof(DirtTileStateEntityLogic))
                 return;
             GameContext.FarmingDatabase.EntityWaterCanAction(Entity, tileLocation, facade);
@@ -106,7 +105,7 @@ namespace DeamonsSprinklerMod {
         /// <param name="facade">Universe this entity is located in.</param>
         /// <param name="tileLocation">The world location to water.</param>
         private void WaterPlantSilently(EntityUniverseFacade facade, Vector3I tileLocation) {
-            var tileInteractionState = facade.FetchTileStateEntityLogic(tileLocation);
+            var tileInteractionState = facade.FetchTileStateEntityLogic(tileLocation, TileAccessFlags.None);
             if (tileInteractionState == null || tileInteractionState.GetType() != typeof(DirtTileStateEntityLogic))
                 return;
             GameContext.FarmingDatabase.EntityWaterCanAction(Entity, tileLocation, facade);
@@ -182,7 +181,7 @@ namespace DeamonsSprinklerMod {
             WaterParticles = new ParticleSource(GameContext.ParticleDatabase.GetParticle(SprinklerComp.SprinklerEffect).ParticleData);
             _lastCheck = Timestep.Null;
             _currentTile = _positions.Count;
-            Entity.Physics.Construct(arguments.FetchBlob("position").GetVector3D(), Vector3D.Zero);
+            Entity.Physics.Construct(arguments.FetchBlob("position").GetVector3D(), arguments.FetchBlob("velocity").GetVector3D());
             Entity.Physics.MakePhysicsless();
         }
 
@@ -226,10 +225,6 @@ namespace DeamonsSprinklerMod {
 
         public override void Interact(Entity entity, EntityUniverseFacade facade, ControlState main, ControlState alt) { }
 
-        public override bool CheckChangingActiveItem() {
-            return false;
-        }
-
         public override bool IsPersistent() {
             return true;
         }
@@ -252,18 +247,37 @@ namespace DeamonsSprinklerMod {
             constructData.FetchBlob("location").SetVector3I(Location);
             constructData.SetLong("variant", _variant);
             constructData.FetchBlob("position").SetVector3D(Entity.Physics.Position);
+            constructData.FetchBlob("velocity").SetVector3D(Vector3D.Zero);
             data.SetBool("done", _done);
             data.FetchBlob("bottomOffset").SetVector3D(_bottomOffset);
+            data.SetLong("lastCheckedDay", _lastCheckedDay);
+            data.SetTimestep("lastChecked", _lastCheck);
+            var positions = data.FetchList("positions");
+            positions.Clear();
+            foreach (var binding in _positions) {
+                var entry = BlobAllocator.ListEntry();
+                entry.Blob().SetVector2I(binding);
+                positions.Add(entry);
+            }
+            data.SetLong("currentTile", _currentTile);
         }
 
         /// <summary>
         /// Restore from saved data
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="facade"></param>
         public override void RestoreFromPersistedData(Blob data, EntityUniverseFacade facade) {
             Entity.Construct(data.GetBlob("constructData"), facade);
             _done = data.GetBool("done");
             _bottomOffset = data.GetBlob("bottomOffset").GetVector3D();
+            _lastCheckedDay = (int)data.GetLong("lastCheckedDay", 0);
+            _lastCheck = data.GetTimestep("lastChecked", Timestep.Null);
+            _currentTile = (int)data.GetLong("currentTile", 0);
+            _positions.Clear();
+            foreach (var entry in data.FetchList("positions")) {
+                _positions.Add(entry.Blob().GetVector2I());
+            }
             Store();
         }
 
@@ -284,6 +298,10 @@ namespace DeamonsSprinklerMod {
         }
 
         public override bool Interactable() {
+            return false;
+        }
+
+        public override bool CanChangeActiveItem() {
             return false;
         }
     }

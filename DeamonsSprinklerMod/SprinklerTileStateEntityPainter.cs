@@ -1,4 +1,5 @@
 ﻿using Plukit.Base;
+using Staxel;
 using Staxel.Client;
 using Staxel.Draw;
 using Staxel.Effects;
@@ -7,8 +8,15 @@ using Staxel.Rendering;
 
 namespace DeamonsSprinklerMod {
     sealed class SprinklerTileStateEntityPainter : EntityPainter {
-        readonly EffectRenderer _effectRenderer = new EffectRenderer();
-        protected override void Dispose(bool disposing) { }
+        EffectRenderer _effectRenderer = Allocator.EffectRenderer.Allocate();
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                if (_effectRenderer != null) {
+                    _effectRenderer.Dispose();
+                    Allocator.EffectRenderer.Release(ref _effectRenderer);
+                }
+            }
+        }
 
         public override void RenderUpdate(Timestep timestep, Entity entity, AvatarController avatarController, EntityUniverseFacade facade) {
             _effectRenderer.RenderUpdate(timestep, entity.Effects, entity, this, facade, entity.Physics.Position);
