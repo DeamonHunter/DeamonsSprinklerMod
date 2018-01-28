@@ -153,6 +153,7 @@ namespace DeamonsSprinklerMod {
         /// Restore the entity from temporarily saved data
         /// </summary>
         public override void Restore() {
+            base.Restore();
             Location = _blob.FetchBlob("location").GetVector3I();
             _variant = (uint)_blob.GetLong("variant");
             _bottomOffset = _blob.GetBlob("bottomOffset").GetVector3D();
@@ -242,6 +243,7 @@ namespace DeamonsSprinklerMod {
         /// </summary>
         /// <param name="data"></param>
         public override void StorePersistenceData(Blob data) {
+            base.StorePersistenceData(data);
             var constructData = data.FetchBlob("constructData");
             constructData.SetString("tile", _configuration.Code);
             constructData.FetchBlob("location").SetVector3I(Location);
@@ -269,6 +271,7 @@ namespace DeamonsSprinklerMod {
         /// <param name="facade"></param>
         public override void RestoreFromPersistedData(Blob data, EntityUniverseFacade facade) {
             Entity.Construct(data.GetBlob("constructData"), facade);
+            base.RestoreFromPersistedData(data, facade);
             _done = data.GetBool("done");
             _bottomOffset = data.GetBlob("bottomOffset").GetVector3D();
             _lastCheckedDay = (int)data.GetLong("lastCheckedDay", 0);

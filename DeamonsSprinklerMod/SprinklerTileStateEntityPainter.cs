@@ -9,6 +9,8 @@ using Staxel.Rendering;
 namespace DeamonsSprinklerMod {
     sealed class SprinklerTileStateEntityPainter : EntityPainter {
         EffectRenderer _effectRenderer = Allocator.EffectRenderer.Allocate();
+
+
         protected override void Dispose(bool disposing) {
             if (disposing) {
                 if (_effectRenderer != null) {
@@ -18,7 +20,7 @@ namespace DeamonsSprinklerMod {
             }
         }
 
-        public override void RenderUpdate(Timestep timestep, Entity entity, AvatarController avatarController, EntityUniverseFacade facade) {
+        public override void RenderUpdate(Timestep timestep, Entity entity, AvatarController avatarController, EntityUniverseFacade facade, int updateSteps) {
             _effectRenderer.RenderUpdate(timestep, entity.Effects, entity, this, facade, entity.Physics.Position);
             var logic = entity.Logic as SprinklerTileStateEntityLogic;
             if (logic == null)
@@ -38,10 +40,6 @@ namespace DeamonsSprinklerMod {
             if (logic == null)
                 return;
             logic.WaterParticles.Render(renderTimestep, renderMode);
-        }
-
-        public override bool AssociatedWith(Entity entity) {
-            return entity.Logic is SprinklerTileStateEntityLogic;
         }
 
         public override void StartEmote(Entity entity, Timestep renderTimestep, EmoteConfiguration emote) { }
