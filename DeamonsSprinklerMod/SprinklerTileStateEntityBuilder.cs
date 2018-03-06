@@ -3,7 +3,7 @@ using Staxel.Logic;
 using Staxel.Tiles;
 
 namespace DeamonsSprinklerMod {
-    class SprinklerTileStateEntityBuilder : IEntityPainterBuilder, IEntityLogicBuilder {
+    class SprinklerTileStateEntityBuilder : IEntityPainterBuilder, IEntityLogicBuilder2 {
         public string Kind { get { return KindCode; } }
         public static string KindCode { get { return "mods.sprinkler.tileStateEntity.sprinkler"; } }
 
@@ -30,6 +30,10 @@ namespace DeamonsSprinklerMod {
             Blob.Deallocate(ref blob);
             facade.AddEntity(entity);
             return entity;
+        }
+
+        public bool IsTileStateEntityKind() {
+            return true;
         }
     }
 }

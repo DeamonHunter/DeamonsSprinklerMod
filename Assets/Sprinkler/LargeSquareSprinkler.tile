@@ -1,12 +1,12 @@
 {
   "__inherits": "staxel/tileObject/base.config",
-  "code": "mods.sprinkler.sprinkler.large",
-  "voxels": "mods/Sprinkler/LargeSprinkler.qb",
+  "code": "mods.sprinkler.sprinkler.large.square",
+  "voxels": "mods/Sprinkler/LargeSquareSprinkler.qb",
   "attachToBelow": true,
   "randomizePosition": false,
   "pricing": {
-    "value": 18000.0,
-	  "sellPrice": 12000.0
+    "value": 15700.0, //300 per tile + 1000 for being square.
+	"sellPrice": 9555.0 //65% of sale price
   },
   "categories": [
     "misc"
@@ -19,9 +19,9 @@
     "distance" : {"x": 3, "y": 3},
     "offset" : {"x": 0, "y": -1, "z":0},
     "checkTime" : 5,
-    "isCurved" : true,
+    "isCurved" : false,
     "randomCheckTime" : 1.5,
-    "sprinklerEffect": "mods.sprinkler.sprinklerparticle.large",
+    "sprinklerEffect": "mods.sprinkler.sprinklerparticle.large.square",
     "wateredPlotEffect": "mods.sprinkler.effect.splash"
   }
 }

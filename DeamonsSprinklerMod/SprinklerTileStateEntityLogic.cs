@@ -230,14 +230,6 @@ namespace DeamonsSprinklerMod {
             return true;
         }
 
-        public override bool IsAtLastSavedPosition() {
-            return true;
-        }
-
-        public override ChunkKey GetLastSavedPosition() {
-            return new ChunkKey(Entity.Physics.Position);
-        }
-
         /// <summary>
         /// Set the saved data
         /// </summary>

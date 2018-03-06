@@ -13,6 +13,7 @@
   ],
   "searchable": true,
   "tileStateKind" : "mods.sprinkler.tileState.sprinkler",
+  "prefetchTileState": true,
   "interactActionTrigger": "staxel.entityAction.BreakAndPickupAction",
   "sprinkler" : {
     "checkTime" : 8,

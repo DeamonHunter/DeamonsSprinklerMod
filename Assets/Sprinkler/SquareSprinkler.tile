@@ -1,12 +1,12 @@
 {
   "__inherits": "staxel/tileObject/base.config",
-  "code": "mods.sprinkler.sprinkler.small",
-  "voxels": "mods/Sprinkler/SmallSprinkler.qb",
+  "code": "mods.sprinkler.sprinkler.normal.square",
+  "voxels": "mods/Sprinkler/SquareSprinkler.qb",
   "attachToBelow": true,
   "randomizePosition": false,
   "pricing": {
-    "value": 2000.0,
-	  "sellPrice": 1600.0
+    "value": 7500.0, //300 per tile
+	  "sellPrice": 4875.0 //65%
   },
   "categories": [
     "misc"
@@ -16,10 +16,10 @@
   "prefetchTileState": true,
   "interactActionTrigger": "staxel.entityAction.BreakAndPickupAction",
   "sprinkler" : {
-    "checkTime" : 10,
-    "distance" : {"x": 1, "y": 1},
-    "randomCheckTime" : 3.5,
-    "sprinklerEffect": "mods.sprinkler.sprinklerparticle.small",
+    "checkTime" : 8,
+    "randomCheckTime" : 2.5,
+    "isCurved" : true,
+    "sprinklerEffect": "mods.sprinkler.sprinklerparticle.normal.square",
     "wateredPlotEffect": "mods.sprinkler.effect.splash"
   }
 }

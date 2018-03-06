@@ -1,0 +1,40 @@
+{
+  "code" : "mods.sprinkler.sprinklerparticle.large.square",
+  "angularVelocity" : 0.0,
+  "liveDuration" : 1.5,
+  "particlesPerSecond" : 120.0,
+  "scale" : 0.5,
+  "scaleSpread" : 0.0,
+  "emitDuration" : 0.0,
+  "color" : "ff023CCB",
+  "colorSpread" : {
+    "x" : 0.05,
+    "y" : 0.05,
+    "z" : 0.05
+  },
+  "emitVelocity" : {
+    "x" : 0.0,
+    "y" : 4.2,
+    "z" : 0.0
+  },
+  "emitVelocitySpread" : {
+    "x" : 5.0,
+    "y" : 2.0,
+    "z" : 5.0
+  },
+  "gravityFactor" : {
+    "x" : 0.0,
+    "y" : -0.23,
+    "z" : 0.0
+  },
+  "position" : {
+    "x" : 0.0,
+    "y" : -0.125,
+    "z" : 0.0
+  },
+  "positionSpread" : {
+    "x" : 0.5,
+    "y" : 0.05,
+    "z" : 0.5
+  }
+}
